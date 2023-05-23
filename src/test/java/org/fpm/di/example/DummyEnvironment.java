@@ -7,7 +7,12 @@ import org.fpm.di.Environment;
 public class DummyEnvironment implements Environment {
 
     @Override
+//    public Container configure(Configuration configuration) {
+//        return new DummyContainer();
     public Container configure(Configuration configuration) {
-        return new DummyContainer();
+        DummyBinder dummyBinder = new DummyBinder();
+        configuration.configure(dummyBinder);
+        return new DummyContainer(dummyBinder);
     }
 }
+

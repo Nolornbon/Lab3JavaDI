@@ -3,7 +3,9 @@ package org.fpm.di.example;
 import org.fpm.di.Binder;
 import org.fpm.di.Configuration;
 
+
 public class MyConfiguration implements Configuration {
+
     @Override
     public void configure(Binder binder) {
         binder.bind(MySingleton.class);
@@ -13,5 +15,11 @@ public class MyConfiguration implements Configuration {
 
         binder.bind(A.class, B.class);
         binder.bind(B.class, new B());
+
+
+        binder.bind(Notification.class);
+        binder.bind(SMS.class);
+        binder.bind(Message.class, SMS.class);
+        binder.bind(SMS.class, new SMS());
     }
 }

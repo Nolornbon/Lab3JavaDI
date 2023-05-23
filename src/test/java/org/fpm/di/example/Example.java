@@ -5,10 +5,10 @@ import org.fpm.di.Environment;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 public class Example {
+
 
     private Container container;
 
@@ -17,6 +17,7 @@ public class Example {
         Environment env = new DummyEnvironment();
         container = env.configure(new MyConfiguration());
     }
+
 
     @Test
     public void shouldInjectSingleton() {
@@ -44,4 +45,56 @@ public class Example {
         final UseA hasADependency = container.getComponent(UseA.class);
         assertSame(hasADependency.getDependency(), container.getComponent(B.class));
     }
+
+
+    @Test
+    public void testBuildGraphInjection(){
+        final SMS sms = container.getComponent(SMS.class);
+        final Notification notification = container.getComponent(Notification.class);
+        final Message message = container.getComponent(Message.class);
+        assertNotNull(sms);
+        assertNotNull(notification);
+        assertNotNull(message);
+
+        assertSame(container.getComponent(SMS.class), sms);
+        assertSame(container.getComponent(Message.class), message);
+        assertSame(sms, message);
+        assertSame(sms, notification.getMessaging());
+        assertSame(message, notification.getMessaging());
+    }
+
+    @Test
+    public void testBuildInjectDependencies(){
+        final Notification notification1 = container.getComponent(Notification.class);
+        final Notification notification2 = container.getComponent(Notification.class);
+        assertSame(notification1.getMessaging(),container.getComponent(SMS.class));
+        assertSame(notification1.getMessaging(),container.getComponent(Message.class));
+        assertSame(notification1.getMessaging(), notification2.getMessaging());
+        assertNotSame(notification1, notification2);
+    }
+
+
+    @Test
+    public void testSingletonInjection(){
+        final SMS sms1 = container.getComponent(SMS.class);
+        final SMS sms2 = container.getComponent(SMS.class);
+        final Message message1 = container.getComponent(Message.class);
+        final Message message2 = container.getComponent(Message.class);
+        assertSame(message1,message2);
+        assertSame(sms1, sms2);
+    }
+
+    @Test
+    public void testSingletonInjection2(){
+        final SMS sms = container.getComponent(SMS.class);
+        assertSame(container.getComponent(Message.class), sms);
+    }
+
+    @Test
+    public void shouldCreateNewInstance() {
+        final SMS expectedSMS = new SMS();
+        final SMS actualSMS = container.getComponent(SMS.class);
+        assertNotSame(expectedSMS, actualSMS);
+    }
+
 }
